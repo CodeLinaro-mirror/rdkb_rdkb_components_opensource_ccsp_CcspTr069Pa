@@ -4172,10 +4172,11 @@ CcspCwmppoMpaGetParameterAttributes
 
         if ( ulParamAttrArraySize == 0 )
         {
-            CcspTr069PaTraceDebug(("GPA will return error since PA returns no namespaces.\n"));
+            //CcspTr069PaTraceDebug(("GPA will return error since PA returns no namespaces.\n"));
+            CcspTr069PaTraceWarning(("GPA - Count 0, Returning NULL object\n"));
 
-            returnStatus = ANSC_STATUS_BAD_NAME;
-            goto EXIT2;
+            //returnStatus = ANSC_STATUS_BAD_NAME;
+            //goto EXIT2;
         }
 
         *ppParamAttribArray = pParamAttrArray;
