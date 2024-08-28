@@ -817,6 +817,11 @@ else
 
             }
 
+            if((!strncmp(pCwmpParamValueArray[i].Name, "Device.IP.Interface.", strlen("Device.IP.Interface."))))
+            {
+                pCcspCwmpCpeController->GetParamStringValue((ANSC_HANDLE)pCcspCwmpCpeController,pCwmpParamValueArray[i].Name, &pValue);
+            }
+
             if ( pValue && pValue[0] != '\0' )
             {
                  SlapAllocVariable(pSlapValue);

@@ -204,6 +204,10 @@ CcspCwmpsoInformPopulateTRInformationCustom
         pCwmpParamValueArray[(*ulPresetParamCount)++].Name  = AnscCloneString("Device.LAN.MACAddress"                   );
     }
 
+    pCwmpParamValueArray[(*ulPresetParamCount)++].Name  = AnscCloneString("Device.IP.Interface.1.IPv4Address.1.IPAddress");
+    pCwmpParamValueArray[(*ulPresetParamCount)++].Name  = AnscCloneString("Device.IP.Interface.1.IPv6Address.1.IPAddress");
+    pCwmpParamValueArray[(*ulPresetParamCount)++].Name  = AnscCloneString("Device.IP.Interface.1.IPv6Address.2.IPAddress");
+
     if ( !pCwmpParamValueArray[index_start+0].Name ||
          !pCwmpParamValueArray[index_start+1].Name ||
          !pCwmpParamValueArray[index_start+2].Name ||
