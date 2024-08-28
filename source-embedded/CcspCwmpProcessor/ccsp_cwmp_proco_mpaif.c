@@ -1409,99 +1409,104 @@ CcspCwmppoMpaSetParameterValuesWithWriteID
                 CcspCwmppoMpaMapParamInstNumCwmpToDmInt(pNsList->Args.paramValueInfo.parameterValue);
 
                 pParamValues[k++] = pNsList->Args.paramValueInfo;
+
+                if(!strncmp(pNsList->Args.paramValueInfo.parameterName,"Device.X_CISCO_COM_DeviceControl.",strlen("Device.X_CISCO_COM_DeviceControl.")))
+                {
+                    parameterValStruct_t* pParamValueInfo = &pNsList->Args.paramValueInfo;
+                    rc = strcmp_s("Device.X_CISCO_COM_DeviceControl.RebootDevice",strlen("Device.X_CISCO_COM_DeviceControl.RebootDevice"),pParamValueInfo->parameterName,&ind);
+                    ERR_CHK(rc);
+                    if((rc == EOK) && (!ind))
+                    {
+                        if((strstr(pParamValueInfo->parameterValue,"Router")!=NULL || strstr(pParamValueInfo->parameterValue,"Wifi")!=NULL || strstr(pParamValueInfo->parameterValue,"VoIP")!=NULL || strstr(pParamValueInfo->parameterValue,"MoCA")!=NULL)||strstr(pParamValueInfo->parameterValue,"Device")!=NULL)
+                        {   
+              
+                            if ( strstr( pParamValueInfo->parameterValue, "Device" ) != NULL )
+                            {
+                                /* Before reboot device we need to set reboot reason */
+                                parameterValStruct_t valStr 	 = { "Device.DeviceInfo.X_RDKCENTRAL-COM_LastRebootReason", "tr069-reboot" , ccsp_string };
+                                char				 *faultParam = NULL;
+              
+                                nResult = 
+                                    CcspBaseIf_setParameterValues
+                                    (
+                                     pCcspCwmpCpeController->hMsgBusHandle,
+                                     pFcNsList->FCName,
+                                     pFcNsList->DBusPath,
+                                     ulSessionID,
+                                     ulWriteID, 
+                                     &valStr,
+                                     1,
+                                     TRUE,
+                                     &faultParam
+                                    );
+              
+                                if ( ( nResult != CCSP_SUCCESS )  && \
+                                        ( faultParam )
+                                   )
+                                {
+                                    CcspTr069PaTraceWarning
+                                        (
+                                         (
+                                          "RDKB_REBOOT : Failed to SetValue for param '%s' and ret val is %d\n", 
+                                          valStr.parameterName,
+                                          nResult
+                                         )
+                                        );
+              
+                                    bus_info->freefunc(faultParam);
+                                }
+                            }
+              
+                            CcspTr069PaTraceWarning
+                                (
+                                 (
+                                  "RDKB_REBOOT : RebootDevice triggered from TR69 with value '%s'\n", 
+                                  pParamValueInfo->parameterValue
+                                 )
+                                );
+                        }
+              
+                    }
+                    rc = strcmp_s("Device.X_CISCO_COM_DeviceControl.FactoryReset",strlen("Device.X_CISCO_COM_DeviceControl.FactoryReset"),pParamValueInfo->parameterName, &ind);
+                    ERR_CHK(rc);
+                    if((rc == EOK) && (!ind))
+                    {
+              
+              
+                        if(strstr(pParamValueInfo->parameterValue,"Router")!=NULL || strstr(pParamValueInfo->parameterValue,"Wifi")!=NULL || strstr(pParamValueInfo->parameterValue,"VoIP")!=NULL)
+                        {	
+              
+                            CcspTr069PaTraceWarning
+                                (
+                                 (
+                                  "RDKB_REBOOT : FactoryReset triggered from TR69 with value '%s'\n",pParamValueInfo->parameterValue
+                                 )
+                                );
+                        }
+                    }
+                    rc = strcmp_s("Device.X_CISCO_COM_DeviceControl.DeviceMode",strlen("Device.X_CISCO_COM_DeviceControl.DeviceMode"),pParamValueInfo->parameterName, &ind);
+                    ERR_CHK(rc);
+                    if((rc == EOK) && (!ind))
+                    {
+                        if(strstr(pParamValueInfo->parameterValue,"multiSsid")!=NULL||strstr(pParamValueInfo->parameterValue,"cableHome11")!=NULL||strstr(pParamValueInfo->parameterValue,"Ipv4")!=NULL||strstr(pParamValueInfo->parameterValue,"Ipv6")!=NULL||strstr(pParamValueInfo->parameterValue,"Dualstack")!=NULL)
+                        {   
+              
+                            CcspTr069PaTraceWarning
+                                (
+                                 (
+                                  "RDKB_REBOOT : RebootDevice triggered from TR69 with value '%s'\n", 
+                                  pParamValueInfo->parameterValue
+                                 )
+                                );
+                        }
+                    }
+                }
             }
 
             /* we're ready to make SPV call! */
             CcspTr069PaTraceDebug(("Calling SPV to FC <%s>, DBus path <%s>.\n", pFcNsList->FCName, pFcNsList->DBusPath));
 
             pInvalidParam = NULL;
-            rc = strcmp_s("Device.X_CISCO_COM_DeviceControl.RebootDevice",strlen("Device.X_CISCO_COM_DeviceControl.RebootDevice"),pNsList->Args.paramValueInfo.parameterName,&ind);
-            ERR_CHK(rc);
-            if((rc == EOK) && (!ind))
-            {
-                if((strstr(pParamValues->parameterValue,"Router")!=NULL && strstr(pParamValues->parameterValue,"Wifi")!=NULL && strstr(pParamValues->parameterValue,"VoIP")!=NULL && strstr(pParamValues->parameterValue,"MoCA")!=NULL)||strstr(pParamValues->parameterValue,"Device")!=NULL)
-                {   
-
-                    if ( strstr( pParamValues->parameterValue, "Device" ) != NULL )
-                    {
-                        /* Before reboot device we need to set reboot reason */
-                        parameterValStruct_t valStr 	 = { "Device.DeviceInfo.X_RDKCENTRAL-COM_LastRebootReason", "tr069-reboot" , ccsp_string };
-                        char				 *faultParam = NULL;
-
-                        nResult = 
-                            CcspBaseIf_setParameterValues
-                            (
-                             pCcspCwmpCpeController->hMsgBusHandle,
-                             pFcNsList->FCName,
-                             pFcNsList->DBusPath,
-                             ulSessionID,
-                             ulWriteID, 
-                             &valStr,
-                             1,
-                             TRUE,
-                             &faultParam
-                            );
-
-                        if ( ( nResult != CCSP_SUCCESS )  && \
-                                ( faultParam )
-                           )
-                        {
-                            CcspTr069PaTraceWarning
-                                (
-                                 (
-                                  "RDKB_REBOOT : Failed to SetValue for param '%s' and ret val is %d\n", 
-                                  valStr.parameterName,
-                                  nResult
-                                 )
-                                );
-
-                            bus_info->freefunc(faultParam);
-                        }
-                    }
-
-                    CcspTr069PaTraceWarning
-                        (
-                         (
-                          "RDKB_REBOOT : RebootDevice triggered from TR69 with value '%s'\n", 
-                          pParamValues->parameterValue
-                         )
-                        );
-                }
-
-            }
-            rc = strcmp_s("Device.X_CISCO_COM_DeviceControl.FactoryReset",strlen("Device.X_CISCO_COM_DeviceControl.FactoryReset"),pNsList->Args.paramValueInfo.parameterName, &ind);
-            ERR_CHK(rc);
-            if((rc == EOK) && (!ind))
-            {
-
-
-                if((strstr(pParamValues->parameterValue,"Router")!=NULL && strstr(pParamValues->parameterValue,"Wifi")!=NULL && strstr(pParamValues->parameterValue,"VoIP")!=NULL)||strstr(pParamValues->parameterValue,"Router")!=NULL)
-                {	
-
-                    CcspTr069PaTraceWarning
-                        (
-                         (
-                          "RDKB_REBOOT : FactoryReset triggered from TR69 with value '%s'\n",pParamValues->parameterValue
-                         )
-                        );
-                }
-            }
-            rc = strcmp_s("Device.X_CISCO_COM_DeviceControl.DeviceMode",strlen("Device.X_CISCO_COM_DeviceControl.DeviceMode"),pNsList->Args.paramValueInfo.parameterName, &ind);
-            ERR_CHK(rc);
-            if((rc == EOK) && (!ind))
-            {
-                if(strstr(pParamValues->parameterValue,"multiSsid")!=NULL||strstr(pParamValues->parameterValue,"cableHome11")!=NULL||strstr(pParamValues->parameterValue,"Ipv4")!=NULL||strstr(pParamValues->parameterValue,"Ipv6")!=NULL||strstr(pParamValues->parameterValue,"Dualstack")!=NULL)
-                {   
-
-                    CcspTr069PaTraceWarning
-                        (
-                         (
-                          "RDKB_REBOOT : RebootDevice triggered from TR69 with value '%s'\n", 
-                          pParamValues->parameterValue
-                         )
-                        );
-                }
-            }
             //Set the flag to false
             flag_pInvalidParam = FALSE;
             // Hide the LNF,XHS,MESH Backhaul SSIDs password based on RFC flag
