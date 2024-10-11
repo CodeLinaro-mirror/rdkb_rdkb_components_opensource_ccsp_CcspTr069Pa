@@ -337,6 +337,7 @@ static void drop_root()
     drop_root_caps(&appcaps);
     update_process_caps(&appcaps);
     read_capability(&appcaps);
+    clear_caps(&appcaps);
   }
 }
 
